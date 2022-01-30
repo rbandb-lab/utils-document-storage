@@ -1,0 +1,15 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Document\Domain\Model\Storage" table="storage">
+        <id name="id" type="string" length="36" column="id">
+            <generator strategy="NONE" />
+        </id>
+
+        <field name="name" />
+        <one-to-many field="documents" target-entity="App\Document\Domain\Model\Document" mapped-by="storage" />
+
+    </entity>
+</doctrine-mapping>

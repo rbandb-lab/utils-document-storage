@@ -1,0 +1,28 @@
+index:
+    path: /
+    controller: App\Http\Action\HomeAction
+    methods: GET
+
+create_document:
+  path: /api/document
+  methods: POST
+  controller: App\Document\UI\Action\CreateDocumentAction
+
+get_document_info:
+  path: /api/document/{id}/info
+  methods: GET
+  controller: App\Document\UI\Action\GetDocumentAction
+
+get_documents_info:
+  path: /api/documents
+  methods: GET
+  controller: App\Document\UI\Action\GetDocumentsAction
+
+get_document:
+  path: /api/document/{id}
+  controller: App\Document\UI\Action\GetFileAction
+
+delete_document:
+  path: /api/document/{id}
+  methods: DELETE
+  controller: App\Document\UI\Action\DeleteDocumentAction

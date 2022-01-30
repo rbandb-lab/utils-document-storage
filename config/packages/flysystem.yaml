@@ -1,0 +1,13 @@
+# Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+flysystem:
+    storages:
+#        default.storage:
+#            adapter: 'local'
+#            options:
+#                directory: '%kernel.project_dir%/var/storage/default'
+        azure:
+            adapter: 'azure'
+            options:
+                client: 'MicrosoftAzure\Storage\Blob\BlobRestProxy' # The service ID of the MicrosoftAzure\Storage\Blob\BlobRestProxy instance
+                container: 'document'
+                prefix: ''

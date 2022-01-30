@@ -1,0 +1,20 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Document\Domain\Model\Document" table="document">
+        <id name="id" type="string" length="36" column="id">
+            <generator strategy="NONE" />
+        </id>
+
+        <field name="extension" />
+        <field name="size" type="integer"/>
+        <field name="mimeType" nullable="true" />
+        <field name="fileName" nullable="true" />
+        <field name="targetDir" nullable="true"/>
+
+        <many-to-one field="storage" target-entity="App\Document\Domain\Model\Storage" inversed-by="documents" />
+        <many-to-one field="type" target-entity="App\Document\Domain\Model\CfgDocumentType" inversed-by="documents" />
+    </entity>
+</doctrine-mapping>

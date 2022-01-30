@@ -1,0 +1,75 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $localUploadDirectory: '%kernel.cache_dir%'
+            $cacheDirectory: '%kernel.cache_dir%'
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Document\UI\Action\:
+        resource: '../src/Document/UI/Action'
+        tags: ['controller.service_arguments']
+
+    App\Document\App\CommandHandler\:
+        resource: '../src/Document/App/CommandHandler'
+        tags:
+            - { name: messenger.message_handler }
+
+    App\Document\App\Finder\:
+        resource: '../src/Document/App/Finder'
+        tags: ['messenger.message_handler']
+
+    App\Http\Infra\Exception\Listener\ExceptionListener:
+        arguments: ['%env(APP_ENV)%']
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    App\Document\Infra\CloudStorage\:
+        resource: '../src/Document/Infra/CloudStorage/'
+        tags:
+            - { name: 'app.cloud.storage_adapter'}
+
+    App\Http\Service\CloudStorageRegistry:
+        arguments: [!tagged app.cloud.storage_adapter]
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    App\Messenger\EventHandler\:
+        resource: '../src/Messenger/EventHandler'
+        tags:
+            - { name: messenger.message_handler }
+
+    MicrosoftAzure\Storage\Blob\BlobRestProxy:
+        factory: ['MicrosoftAzure\Storage\Blob\BlobRestProxy', 'createBlobService']
+        arguments: ["DefaultEndpointsProtocol=https;AccountName=document;AccountKey=XXX;EndpointSuffix=core.windows.net"]
+
+    # Redis as a cache adapter
+    Predis\Client:
+        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', createConnection]
+        arguments: ['%env(resolve:REDIS_URL)%', class: 'Predis\Client']
+
+    Symfony\Component\Cache\Adapter\RedisAdapter:
+        arguments: ['@Predis\Client', '', 3600]
+
+    Symfony\Component\Cache\Adapter\AdapterInterface:
+        alias: 'Symfony\Component\Cache\Adapter\RedisAdapter'
